@@ -1,0 +1,11 @@
+{
+  "format_version": 1,
+  "split": "val_seen",
+  "episodes": [
+    {
+      "episode_id": "synthetic-example-001",
+      "actions": ["MOVE_FORWARD", "TURN_RIGHT", "LOOK_UP", "LOOK_DOWN", "STOP"]
+    }
+  ]
+}
+

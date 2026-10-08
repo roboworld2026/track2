@@ -1,0 +1,14 @@
+# Optional inference-only dependencies; no training/detection stack.
+torchvision==0.15.2+cu118
+numpy==1.23.5
+gym==0.17.3
+Pillow==8.4.0
+tensorboard==2.12.3
+moviepy==1.0.3
+webdataset==0.1.40
+ifcfg==0.23
+dtw==1.4.0
+fastdtw==0.3.4
+msgpack_numpy==0.4.8
+jsonlines==4.0.0
+lmdb==1.5.1

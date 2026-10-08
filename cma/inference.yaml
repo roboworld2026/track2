@@ -1,0 +1,39 @@
+# Explicit architecture for the released inference-only ckpt.39.pth.
+# All embeddings and visual encoder parameters are loaded strictly from it.
+INFERENCE:
+  CKPT_PATH: /data/havln2/checkpoints/HA-VLN-CMA/ckpt.39.pth
+  USE_CKPT_CONFIG: false
+  SAMPLE: false
+  POLICY_ACTIONS: [STOP, MOVE_FORWARD, TURN_LEFT, TURN_RIGHT]
+MODEL:
+  policy_name: CMAPolicy
+  normalize_rgb: false
+  ablate_depth: false
+  ablate_rgb: false
+  ablate_instruction: false
+  INSTRUCTION_ENCODER:
+    sensor_uuid: instruction
+    vocab_size: 5401
+    use_pretrained_embeddings: false
+    fine_tune_embeddings: false
+    embedding_size: 50
+    hidden_size: 128
+    rnn_type: LSTM
+    final_state_only: false
+    bidirectional: true
+  RGB_ENCODER:
+    cnn_type: TorchVisionResNet50
+    output_size: 256
+    trainable: false
+  DEPTH_ENCODER:
+    cnn_type: VlnResnetDepthEncoder
+    output_size: 128
+    backbone: resnet50
+    ddppo_checkpoint: NONE
+    trainable: false
+  STATE_ENCODER:
+    hidden_size: 512
+    rnn_type: GRU
+  PROGRESS_MONITOR:
+    use: true
+    alpha: 1.0
