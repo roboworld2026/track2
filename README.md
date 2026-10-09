@@ -2,14 +2,14 @@
 
 <div align="center" markdown="1">
 
-**Official participant toolkit for RoboWorld 2026 Track 2**
+**Official participant toolkit for [RoboWorld 2026](https://roboworld2026.github.io/) Track 2**
 
-*Built on [HA-VLN 2.0](https://uwmilab.github.io/HA-VLN-webpage/) and co-organized with the [RoboPAD Workshop at NeurIPS 2026](https://robotpad2026.github.io/)*
+*Built on [HA-VLN 2.0](https://uwmilab.github.io/HA-VLN-webpage/) and affiliated with the [RoboPAD Workshop at NeurIPS 2026](https://robotpad2026.github.io/)*
 
 [![RoboWorld](https://img.shields.io/badge/RoboWorld-2026-blue)](https://roboworld2026.github.io/)
 [![Track 2](https://img.shields.io/badge/Track_2-HA--VLN-green)](https://roboworld2026.github.io/track2)
 [![CodaBench](https://img.shields.io/badge/CodaBench-Submit-purple)](https://www.codabench.org/competitions/18135/)
-[![RoboPAD](https://img.shields.io/badge/Jointly_with-RoboPAD_2026-red)](https://robotpad2026.github.io/)
+[![RoboPAD](https://img.shields.io/badge/Affiliated_with-RoboPAD_2026-red)](https://robotpad2026.github.io/)
 [![Paper](https://img.shields.io/badge/arXiv-2503.14229-b31b1b)](https://arxiv.org/abs/2503.14229)
 
 <p align="center">
@@ -44,13 +44,10 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 | Budget | 1–500 actions; all six actions count toward the limit. |
 | Evaluation | Trusted simulator replay measuring navigation and human-aware safety. |
 
-`LOOK_UP` and `LOOK_DOWN` are legal pitch-changing actions from VLN-CE. They do
-not move the agent and have no binding to human animation frames.
-
 ## 📅 Competition Details
 
 - **Event:** [RoboWorld Challenge 2026, Track 2](https://roboworld2026.github.io/track2).
-- **Associated workshop:** [RoboPAD Workshop at NeurIPS 2026](https://robotpad2026.github.io/).
+- **Affiliated workshop:** [RoboPAD Workshop at NeurIPS 2026](https://robotpad2026.github.io/).
 - **Registration:** register through the [Google Form](https://roboworld2026.github.io/#registration) (registration opens Oct 08, 2026) to be eligible for the leaderboard, certificates, and awards.
 - **Submission platform:** [CodaBench — HA-VLN](https://www.codabench.org/competitions/18135/).
 - **Submission limits:** five per day and 100 per phase; the best score is retained.
@@ -85,64 +82,6 @@ Both phases use the same six-action JSON contract and Score. Phase 1 and Phase
 | 💡 **Best Innovative Solution** | Certificate recognizing outstanding creativity and technical innovation |
 | 🎤 **Oral Presentations** | Selected top-performing teams will be invited to give oral presentations at the **RoboPAD Workshop @ NeurIPS 2026** |
 
-The [RoboWorld Rising Star Award](https://roboworld2026.github.io/) is also available; see the event site for eligibility and details.
-
-## 📊 Dataset
-
-The challenge uses released HA-VLN 2.0 resources: HA-R2R navigation episodes
-and instructions, HAPS2.0 human assets, multi-human annotations, and licensed
-Matterport3D scenes. Challenge datasets are external to the Docker image.
-
-| HA-R2R split | Instructions | Distinct trajectories | Human-influenced episodes ($\beta L$) |
-|:--|--:|--:|--:|
-| Train | 10,819 | 3,603 | — |
-| Validation Seen (`val_seen`) | 778 | 259 | 682 |
-| Validation Unseen (`val_unseen`) | 1,839 | 613 | 1,593 |
-| Test | 3,408 | — | — |
-| **Total** | **16,844** | — | — |
-
-The complete HA-R2R benchmark spans 90 scenes, and HAPS 2.0 provides 910
-human models and 486 motion sequences (120 frames each). Phase 1 requires one
-action sequence for each of the 778 `val_seen` and 1,839 `val_unseen` episodes.
-Phase 2 provides test inputs for final evaluation, while reference trajectories
-and collision annotations remain withheld.
-
-```text
-/data/havln2/
-├── HA-R2R/
-│   ├── val_seen/val_seen_bertidx.json.gz
-│   └── val_unseen/val_unseen_bertidx.json.gz
-├── HA-R2R-tools/
-│   ├── collision_num_val_seen.json
-│   └── collision_num_val_unseen.json
-├── Multi-Human-Annotations/human_motion.json
-├── HAPS2_0/<released-human-assets>
-├── scene_datasets/mp3d/<licensed-scene-assets>
-├── checkpoints/HA-VLN-CMA/ckpt.39.pth # optional reference policy
-└── recompute_navmesh/                 # writable replay cache
-```
-
-To obtain Matterport3D, visit the [official dataset page](https://niessner.github.io/Matterport/),
-sign its [Terms of Use](https://kaldir.vc.in.tum.de/matterport/MP_TOS.pdf), and send
-the signed form to `matterport3d@googlegroups.com` to request access. Once
-approved, obtain the official `download_mp.py` script and follow the
-[HA-VLN 2.0 VLN-CE scene instructions](https://github.com/UWMILab/HA-VLN/blob/main/agent/VLN-CE/README.md#scenes-matterport3d)
-to download the Habitat scene assets:
-
-```bash
-python3 download_mp.py -o /absolute/path/to/havln2-data/scene_datasets --task_data habitat
-# After task-data download finishes, press Ctrl-C at the prompt for the main dataset.
-# Extract habitat scene meshes so they reside at scene_datasets/mp3d/<scan>/<scan>.glb
-unzip /absolute/path/to/havln2-data/scene_datasets/v1/tasks/mp3d_habitat.zip -d /absolute/path/to/havln2-data/scene_datasets
-```
-
-The resulting layout must include
-`<host-data-root>/scene_datasets/mp3d/<scan>/<scan>.glb`. Your host data root
-can be anywhere. When using the challenge Docker image, mount it at
-`/data/havln2` and run `havln-check-data`.
-Matterport3D is not included in this repository, helper script, image, or
-submission kit.
-
 ## 🚀 Getting Started
 
 This walkthrough runs the released CMA checkpoint, records the actions actually
@@ -161,17 +100,8 @@ DATA_ROOT=/absolute/path/to/havln2-data
 bash scripts/download_data.sh --destination "$DATA_ROOT" --target all
 ```
 
-Use the Linux filesystem rather than a Windows-mounted drive for HAPS 2.0:
-released asset directory names contain colons.
-
-`--target core` (the default) downloads replay data and human assets;
-`--target cma` downloads the checkpoint and its matching instruction-token inputs.
-Small annotation files come from the released GitHub repository. Add your
-separately licensed Matterport3D scenes under
-`$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb`.
-For the older dataset mirrors, use `--source gdrive` with `gdown` installed;
-the CMA checkpoint still comes from Hugging Face. Existing files with a different
-checksum are rejected rather than overwritten.
+Use a Linux/WSL filesystem for HAPS 2.0 asset extraction. Place your licensed
+Matterport3D scenes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb`.
 
 ### 2. Start a development container and install CMA dependencies
 
@@ -199,130 +129,63 @@ havln-check-data
 
 The setup script retrieves pinned public policy sources and installs the inference
 dependencies while retaining the image's Habitat core. Re-enter with
-`docker start -ai havln-cma` after exiting. Keep this named container to reuse
-installed dependencies; removing it removes that installation, but not the
-mounted data, sources, or exported results. Data symlinks require their targets
-to be mounted too. For scenes stored elsewhere, bind-mount them into a real
-`/data/havln2/scene_datasets/mp3d` directory rather than a nested directory symlink.
+`docker start -ai havln-cma` after exiting.
 
-### 3. Run CMA and export the executed actions
+### 3. Run CMA and export the executed actions (Optional)
 
-First run a diagnostic on two episodes **per split**:
+You do not need to use the CMA baseline for your competition submission; any model or planning approach that outputs valid action sequences is welcome. We provide this reference baseline walkthrough to illustrate how to export and verify a valid submission archive.
 
-```bash
-python /toolkit/scripts/export_cma_submission.py \
-  --output-dir /workspace/cma-smoke --episode-limit 2
-```
-
-This writes diagnostic JSON files only, not a submission ZIP.
-For the complete validation sets, run:
+To run CMA inference and export action predictions for the validation splits:
 
 ```bash
 python /toolkit/scripts/export_cma_submission.py \
   --output-dir /workspace/cma-submission
 ```
 
-For multiple GPUs, append `--gpu-ids 0 1` (container-visible GPU indices).
-The exporter retains completed scan shards, so the same command can resume an
-interrupted run. Changed inputs require a new output directory. Local multi-GPU subprocess logs and export metadata are saved alongside the results.
-For native simulator diagnostics, rerun with `HAVLN_CMA_VERBOSE=1` set.
+For multiple GPUs, append `--gpu-ids 0 1` (container-visible GPU indices). The exporter retains completed scan shards, so the same command can resume an interrupted run. Local multi-GPU subprocess logs and export metadata are saved alongside the results.
 
-The published [CMA checkpoint](https://huggingface.co/datasets/fly1113/HA-VLN/tree/main/checkpoints/HA-VLN-CMA)
-contains the complete policy state, including instruction embeddings and visual
-encoders; this exporter needs no additional encoder initialization weights.
-Its four-action output head uses a valid subset of the six-action environment.
-No trainer edits or conversion from predicted positions are needed.
+Completing all **778 `val_seen` and 1,839 `val_unseen` episodes** automatically packages `val_seen.json`, `val_unseen.json`, and `submission.zip`.
 
-Only complete coverage of all **778 `val_seen` and 1,839 `val_unseen` episodes**
-produces `val_seen.json`, `val_unseen.json`, and `submission.zip`.
-The ZIP is validated before publication.
+### 4. Validate and submit
 
-### 4. Validate, replay, and submit
-
-Inside the container:
+Inside the container, verify your submission package:
 
 ```bash
 havln-validate /workspace/cma-submission/submission.zip
-havln-score-phase1 \
-  --submission /workspace/cma-submission/submission.zip \
-  --output-dir /workspace/cma-submission/replay --gpu-ids 0
 ```
 
-Validation checks format and exact coverage; replay computes the challenge
-metrics and Score. To replay with the unchanged public image in a separate
-container, use [Local Docker Replay](#-local-docker-replay).
-Upload `$WORK_ROOT/cma-submission/submission.zip` on the host to
-[CodaBench](https://www.codabench.org/competitions/18135/).
-The public-test and final phases use the same task and scoring algorithm;
-this walkthrough uses the released validation splits.
+Once validated, upload `$WORK_ROOT/cma-submission/submission.zip` on your host to [CodaBench](https://www.codabench.org/competitions/18135/).
 
-## 🐳 Local Docker Replay
+## 📊 Dataset
 
-The public runtime image is optional for participants. It contains the
-HA-VLN 2.0 / Habitat 0.1.7 replay environment, but no challenge data or
-licensed Matterport3D scenes. The immutable image reference is:
+The challenge is built on released HA-VLN 2.0 resources: HA-R2R navigation episodes,
+HAPS 2.0 dynamic human assets, and licensed Matterport3D scenes. Challenge datasets
+are mounted externally into the container.
 
-```text
-ghcr.io/jostarxiong/havln-challenge-2026@sha256:e1a0544f66beaf5218cc9df63da51b4a1a22a6bf0471ca0c2f75e81ee02a6556
-```
+| HA-R2R split | Episodes |
+|:--|--:|
+| Train | 10,819 |
+| Validation Seen (`val_seen`) | 778 |
+| Validation Unseen (`val_unseen`) | 1,839 |
+| Test | 3,408 |
+| **Total** | **16,844** |
 
-Install Docker and NVIDIA Container Toolkit for GPU replay.
-Validation and environment checks do not need a GPU:
-
-```bash
-IMAGE=ghcr.io/jostarxiong/havln-challenge-2026@sha256:e1a0544f66beaf5218cc9df63da51b4a1a22a6bf0471ca0c2f75e81ee02a6556
-DATA_ROOT=/absolute/path/to/havln2-data
-NAVMESH_ROOT=/absolute/path/to/writable-navmesh-cache
-WORK_ROOT=/absolute/path/to/participant-workspace
-
-docker pull "$IMAGE"
-docker run --rm "$IMAGE" havln-check-environment
-docker run --rm \
-  -v "$DATA_ROOT:/data/havln2:ro" \
-  -v "$NAVMESH_ROOT:/data/havln2/recompute_navmesh" \
-  "$IMAGE" havln-check-data
-docker run --rm -v "$WORK_ROOT:/workspace" "$IMAGE" \
-  havln-validate /workspace/submission.zip
-```
-
-For optional complete Phase 1 replay, expose the GPUs selected on your host.
-The `--gpu-ids` values are GPU ordinals as seen *inside* the container:
-
-```bash
-docker run --rm --gpus '"device=0,1"' \
-  -v "$DATA_ROOT:/data/havln2:ro" \
-  -v "$NAVMESH_ROOT:/data/havln2/recompute_navmesh" \
-  -v "$WORK_ROOT:/workspace" \
-  "$IMAGE" havln-score-phase1 \
-  --submission /workspace/submission.zip \
-  --output-dir /workspace/results \
-  --gpu-ids 0 1
-```
-
-Local replay may generate navmeshes in the separately writable cache mount.
-Participant code may live anywhere and may be mounted read-only at any path;
-there is no required launcher or agent directory. Local results help with
-development, but only CodaBench's official replay determines leaderboard
-scores.
+- **HA-R2R**: 16,844 instructions across 90 scenes with multi-human interaction annotations.
+- **HAPS 2.0**: 486 dynamic 3D human motion sequences across 172 activities.
+- **Matterport3D**: Licensed indoor scene assets. Obtain access via the [Matterport3D project](https://niessner.github.io/Matterport/): place extracted meshes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb` (see [FAQ Q7](#-frequently-asked-questions)).
 
 ## 🧠 Baseline Model
 
-We provide **HA-VLN-CMA**, the released VLN-CE cross-modal attention agent
-adapted by HA-VLN 2.0, as the executable reference baseline for this challenge
-(alongside HA-VLN-VL and external methods such as BEVBert, ETPNav, NaVid, and
-NaVILA evaluated in the paper). Participants are free to use any model or
-planning approach that outputs valid action sequences.
+We provide **HA-VLN-CMA** as the reference baseline for Track 2. For model architecture and training details, refer to the official [HA-VLN repository](https://github.com/UWMILab/HA-VLN). Participants are free to use any model, planner, or VLA approach that outputs valid discrete action sequences.
 
-Example local replay of the CMA walkthrough above produced:
+Evaluating the released CMA validation checkpoint produces reference results:
 
 | Split | SR ↑ | NE ↓ | CR ↓ | TCR ↓ | Score ↑ |
 |:--|--:|--:|--:|--:|--:|
 | `val_seen` | 0.180 | 6.223 | 0.623 | 13.726 | 16.509450 |
 | `val_unseen` | 0.129 | 6.387 | 0.684 | 17.536 | 12.945387 |
 
-Score is calculated from unrounded metrics; the displayed component metrics are
-rounded. Humans move in real time, so repeat runs can differ. These are reference
-results; only CodaBench's official replay determines leaderboard scores.
+*Note: Component metrics are rounded for display. All official rankings and leaderboard scores are determined by CodaBench replay evaluation.*
 
 ## 📏 Evaluation
 
@@ -330,28 +193,12 @@ results; only CodaBench's official replay determines leaderboard scores.
 |:--|:--|:--|
 | SR (Success Rate) | Higher | Collision-free success rate over all episodes. |
 | NE (Navigation Error) | Lower | Mean final navigation error in metres. |
-| CR (Collision Rate) | Lower | Collision-episode rate over released human-influenced episodes. |
+| CR (Collision Rate) | Lower | Collision-episode rate over human-influenced episodes. |
 | TCR (Total Collision Rate) | Lower | Mean adjusted human-collision count over all episodes. |
-
-Let $L$ be the number of episodes, $s_i$ the navigation-success indicator,
-$d_i$ the final goal distance, and $e_i$ the adjusted human-collision count.
-The released human-influenced episode count is $\beta L$:
-
-$$
-\begin{aligned}
-\mathrm{SR} &= \frac{1}{L}\sum_{i=1}^{L}s_i\mathbf{1}[e_i=0], &
-\mathrm{NE} &= \frac{1}{L}\sum_{i=1}^{L}d_i, \\
-\mathrm{CR} &= \frac{\sum_{i=1}^{L}\min(e_i,1)}{\beta L}, &
-\mathrm{TCR} &= \frac{1}{L}\sum_{i=1}^{L}e_i.
-\end{aligned}
-$$
-
-In particular, CR divides by the released human-influenced episode count
-$\beta L$, while SR, NE, and TCR divide by all $L$ episodes.
 
 ### 🏁 Composite Score
 
-The composite Score uses the full-precision metrics (higher is better):
+The composite Score combines navigation and social compliance metrics (higher is better):
 
 $$
 \begin{aligned}
@@ -410,16 +257,13 @@ No. Any method is eligible if it exports legal official action sequences.
 
 **Q2. Do I submit code, weights, or a container?**
 
-For CodaBench scoring, submit only the required JSON action-sequence files in
-one ZIP; no code, weights, or container are part of that upload. However, if
-your team earns an award, you will be expected to contribute to a technical
-report explaining your method and innovations, including relevant model,
-training, and implementation details. Organizers may request code or model
-information to verify an awarded result.
+No code, weights, or containers:
+- **Standard Submission:** Upload only the required JSON action-sequence files in a single ZIP.
+- **Award Winners:** Teams qualifying for awards (Top 5, Best Innovative Solution, or RoboPAD presentation) will be expected to contribute to a technical report and may be asked to provide code or models for verification.
 
 **Q3. Are `LOOK_UP` and `LOOK_DOWN` valid?**
 
-Yes. Both are original VLN-CE pitch actions and count toward 500 task steps.
+Yes. Both actions are valid and count toward the 500 task steps.
 
 **Q4. Does an action advance a human animation frame?**
 
@@ -450,25 +294,25 @@ and place the licensed scenes under your host data root's
 `scene_datasets/mp3d/`. That root can be anywhere on your machine. When using
 the challenge Docker image, mount it at `/data/havln2` inside the container.
 
-## 🔗 Contact and Resources
-
-For technical support, use [GitHub Issues](https://github.com/F1y1113/havln-challenge/issues).
-For event and registration questions, email
-[roboworld2026@outlook.com](mailto:roboworld2026@outlook.com).
+## 🔗 Resources and Contact
 
 | Resource | Link |
 |:--|:--|
+| HA-VLN 2.0 | [Project page](https://uwmilab.github.io/HA-VLN-webpage/) & [GitHub](https://github.com/UWMILab/HA-VLN) |
 | RoboWorld 2026 | [Challenge website](https://roboworld2026.github.io/) |
-| Starting kits, submissions, and leaderboard | [CodaBench](https://www.codabench.org/competitions/18135/) |
-| Track website | [HA-VLN Challenge](https://roboworld2026.github.io/track2) |
-| Challenge repository and participant toolkit | [GitHub](https://github.com/F1y1113/havln-challenge) |
-| Associated workshop | [RoboPAD 2026](https://robotpad2026.github.io/) |
-| HA-VLN 2.0 | [Project page](https://uwmilab.github.io/HA-VLN-webpage/) |
-| HA-VLN 2.0 code and CMA | [Official repository](https://github.com/UWMILab/HA-VLN) |
-| Released data and CMA checkpoint | [Hugging Face](https://huggingface.co/datasets/fly1113/HA-VLN) |
-| VLN-CE | [Original repository](https://github.com/jacobkrantz/VLN-CE) |
-| Challenge rules and submission details | [CodaBench](https://www.codabench.org/competitions/18135/) and this README |
-| HA-VLN 2.0 Get Started | [Project documentation](https://jostarxiong.github.io/havln2-docs/) |
+| Track 2 HA-VLN | [Track website](https://roboworld2026.github.io/track2) |
+| CodaBench Platform | [Submissions and leaderboard](https://www.codabench.org/competitions/18135/) |
+| RoboPAD Workshop | [RoboPAD @ NeurIPS 2026](https://robotpad2026.github.io/) |
+
+For technical support, use [GitHub Issues](https://github.com/roboworld2026/track2/issues).
+For event and registration questions, email [roboworld2026@gmail.com](mailto:roboworld2026@gmail.com).
+
+### 💬 Community & Discussion
+
+- **Discord:** [Join the RoboWorld Track 2 Discord](https://discord.gg/S8s8JcxtT)
+- **WeChat Group:** [Join the RoboWorld Track 2 WeChat Group](https://github.com/roboworld2026/roboworld2026.github.io/blob/main/wechat_track2.JPG)
+
+<a href="https://github.com/roboworld2026/roboworld2026.github.io/blob/main/wechat_track2.JPG" target="_blank"><img src="https://raw.githubusercontent.com/roboworld2026/roboworld2026.github.io/main/wechat_track2.JPG" alt="Track 2 WeChat Group QR Code" width="220" /></a>
 
 ## 📄 License and Terms
 
@@ -498,6 +342,6 @@ If you use HA-VLN 2.0 or this challenge toolkit, cite the benchmark paper:
 
 ## 🤝 Acknowledgements
 
-The track is organized by the RoboWorld Challenge 2026 team and jointly held
-with RoboPAD 2026. We thank the HA-VLN 2.0 and VLN-CE authors, dataset and
-simulator contributors, Matterport3D, and CodaBench.
+The track is organized by the RoboWorld Challenge 2026 team and affiliated with
+the RoboPAD Workshop at NeurIPS 2026. We thank the HA-VLN 2.0 and VLN-CE authors,
+dataset and simulator contributors, Matterport3D, and CodaBench.
