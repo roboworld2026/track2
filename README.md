@@ -59,7 +59,8 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 |:--|:--|
 | Registration opens | October 08, 2026 (via [Google Form](https://roboworld2026.github.io/#registration)) |
 | Data, baselines & servers online (Phase 1 opens) | October 15, 2026 |
-| Phase 1 deadline / Phase 2 opens | October 30, 2026 |
+| Phase 2 opens | October 30, 2026 |
+| Phase 1 development deadline (extended) | November 23, 2026 (Monday) |
 | Final submission deadline (Phase 2 closes) | November 30, 2026 |
 | Award decision announcement | December 12, 2026 |
 
@@ -69,8 +70,10 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 
 | Phase | Duration | Submission | Leaderboard role |
 |:--|:--|:--|:--|
-| Phase 1: Validation | Oct 15 – Oct 30, 2026 | Released `val_seen` and `val_unseen` action sequences | Reports both splits; ranks by full-precision `val_unseen` Score. |
-| Phase 2: Final Test | Oct 30 – Nov 30, 2026 | Action sequences for the held-out phase bundle | Determines final ranking and awards. |
+| Phase 1: Validation | Oct 15 – Nov 23, 2026 | Released `val_seen` and `val_unseen` action sequences | Development & validation testing. Reports both splits; ranks by full-precision `val_unseen` Score. Does not determine awards. |
+| Phase 2: Final Test | Oct 30 – Nov 30, 2026 | Action sequences for held-out test split (3,408 episodes) | Official final test evaluation. Determines final ranking and awards. |
+
+*Updated on Oct 30, 2026: Phase 1 is extended to Monday, November 23, 2026 solely for development and validation testing, and does not determine awards. All teams are eligible to participate in Phase 2 regardless of Phase 1 participation. [Download Phase 2 Test Dataset](https://drive.google.com/drive/folders/1HcSg3qCxriEjsgDLlPWBEz9TbgD5RA7W?usp=drive_link).*
 
 Both phases use the same six-action JSON contract and Score. Phase 1 and Phase
 2 results are not combined.
@@ -173,7 +176,8 @@ are mounted externally into the container.
 
 - **HA-R2R**: 16,844 instructions across 90 scenes with multi-human interaction annotations.
 - **HAPS 2.0**: 486 dynamic 3D human motion sequences across 172 activities.
-- **Matterport3D**: Licensed indoor scene assets. Obtain access via the [Matterport3D project](https://niessner.github.io/Matterport/): place extracted meshes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb` (see [FAQ Q7](#-frequently-asked-questions)).
+- **Matterport3D**: Licensed indoor scene assets. Obtain access via the [Matterport3D project](https://niessner.github.io/Matterport/) and place extracted meshes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb` (see [FAQ Q7](#-frequently-asked-questions)).
+- **Phase 2 Test Dataset**: [Official test instructions and human annotations (Google Drive)](https://drive.google.com/drive/folders/1HcSg3qCxriEjsgDLlPWBEz9TbgD5RA7W?usp=drive_link) for running model inference and evaluation in Phase 2.
 
 ## 🧠 Baseline Model
 
@@ -215,29 +219,60 @@ precision.
 
 ## 📥 Submission Format
 
-Phase 1 requires one valid prediction JSON for each validation split. The
-following ZIP is the recommended layout, not a filename restriction:
+Both phases use the same six-action JSON contract and Score.
+
+### Phase 2: Final Test Submission (Active)
+
+Phase 2 requires a single root-level prediction JSON with `split: "test"` covering all 3,408 test episodes:
 
 ```text
 submission.zip
-├── val_seen.json
-└── val_unseen.json
+└── test.json          # 3,408 test episodes
 ```
 
-Each file follows this schema (the invented ID is only an illustration):
+Package Phase 2 predictions:
+
+```bash
+zip -j submission.zip test.json
+```
+
+Each prediction file follows this schema:
 
 ```json
 {
   "format_version": 1,
-  "split": "val_unseen",
+  "split": "test",
   "episodes": [
     {
-      "episode_id": "synthetic-example-001",
+      "episode_id": "1",
       "actions": ["MOVE_FORWARD", "TURN_LEFT", "LOOK_UP", "LOOK_DOWN", "STOP"]
     }
   ]
 }
 ```
+
+<details>
+<summary><b>Phase 1 (Validation) Submission Format (Click to expand)</b></summary>
+
+Phase 1 requires one valid prediction JSON for each validation split:
+
+```text
+submission.zip
+├── val_seen.json      # 778 episodes
+└── val_unseen.json    # 1,839 episodes
+```
+
+Package Phase 1 predictions:
+
+```bash
+zip -j submission.zip val_seen.json val_unseen.json
+```
+
+Each validation file sets `"split": "val_seen"` or `"split": "val_unseen"`.
+
+*Note: Phase 1 is extended to November 23, 2026 (Monday) solely for development and validation testing, and does not determine challenge awards. All teams are eligible to participate in Phase 2 regardless of Phase 1 participation.*
+
+</details>
 
 Include every official episode ID exactly once. `STOP`, if present, occurs once
 at the end; sequences shorter than 500 actions require it, while sequences of
@@ -248,8 +283,7 @@ have complete manifest coverage.
 The validator identifies predictions by each JSON object's `split` value, so
 you may rename the files and include harmless extra root files. It rejects
 missing or duplicate required splits, invalid prediction content, unsafe ZIP
-members, and nested paths. Phase 2 follows the same rule with its single
-required `test` split when that phase opens.
+members, and nested paths.
 
 ## ❓ Frequently Asked Questions
 
