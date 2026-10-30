@@ -38,7 +38,8 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 
 | Component | Description |
 |:--|:--|
-| Input | Episode ID, initial position and yaw, navigation instruction, and released human-aware episode inputs. |
+| Input | Episode ID, initial pose, navigation instruction, ongoing agent pose (position and heading from simulator state, GPS+compass), and sequential egocentric RGB-D observations. Direct access to ground-truth human trajectories (`human_motion.json`) is strictly prohibited during inference. |
+| Sensor Setup | One forward-facing RGB-D camera. Adding additional cameras is not permitted; panoramic views must be acquired by rotating in place (rotation actions count toward the action budget). |
 | Output | One sequence made from six discrete VLN-CE actions. |
 | Actions | `STOP`, `MOVE_FORWARD`, `TURN_LEFT`, `TURN_RIGHT`, `LOOK_UP`, `LOOK_DOWN`. |
 | Budget | 1–500 actions; all six actions count toward the limit. |
@@ -58,7 +59,8 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 |:--|:--|
 | Registration opens | October 08, 2026 (via [Google Form](https://roboworld2026.github.io/#registration)) |
 | Data, baselines & servers online (Phase 1 opens) | October 15, 2026 |
-| Phase 1 deadline / Phase 2 opens | October 30, 2026 |
+| Phase 2 opens | October 30, 2026 |
+| Phase 1 development deadline (extended) | November 23, 2026 (Monday) |
 | Final submission deadline (Phase 2 closes) | November 30, 2026 |
 | Award decision announcement | December 12, 2026 |
 
@@ -68,8 +70,10 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 
 | Phase | Duration | Submission | Leaderboard role |
 |:--|:--|:--|:--|
-| Phase 1: Validation | Oct 15 – Oct 30, 2026 | Released `val_seen` and `val_unseen` action sequences | Reports both splits; ranks by full-precision `val_unseen` Score. |
-| Phase 2: Final Test | Oct 30 – Nov 30, 2026 | Action sequences for the held-out phase bundle | Determines final ranking and awards. |
+| Phase 1: Validation | Oct 15 – Nov 23, 2026 | Released `val_seen` and `val_unseen` action sequences | Development & validation testing. Reports both splits; ranks by full-precision `val_unseen` Score. Does not determine awards. |
+| Phase 2: Final Test | Oct 30 – Nov 30, 2026 | Action sequences for held-out test split (3,408 episodes) | Official final test evaluation. Determines final ranking and awards. |
+
+*Updated on Oct 30, 2026: Phase 1 is extended to Monday, November 23, 2026 solely for development and validation testing, and does not determine awards. All teams are eligible to participate in Phase 2 regardless of Phase 1 participation. [Download Phase 2 Test Dataset](https://drive.google.com/drive/folders/1HcSg3qCxriEjsgDLlPWBEz9TbgD5RA7W?usp=drive_link).*
 
 Both phases use the same six-action JSON contract and Score. Phase 1 and Phase
 2 results are not combined.
@@ -172,7 +176,8 @@ are mounted externally into the container.
 
 - **HA-R2R**: 16,844 instructions across 90 scenes with multi-human interaction annotations.
 - **HAPS 2.0**: 486 dynamic 3D human motion sequences across 172 activities.
-- **Matterport3D**: Licensed indoor scene assets. Obtain access via the [Matterport3D project](https://niessner.github.io/Matterport/): place extracted meshes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb` (see [FAQ Q7](#-frequently-asked-questions)).
+- **Matterport3D**: Licensed indoor scene assets. Obtain access via the [Matterport3D project](https://niessner.github.io/Matterport/) and place extracted meshes under `$DATA_ROOT/scene_datasets/mp3d/<scan>/<scan>.glb` (see [FAQ Q7](#-frequently-asked-questions)).
+- **Phase 2 Test Dataset**: [Official test instructions and human annotations (Google Drive)](https://drive.google.com/drive/folders/1HcSg3qCxriEjsgDLlPWBEz9TbgD5RA7W?usp=drive_link) for running model inference and evaluation in Phase 2.
 
 ## 🧠 Baseline Model
 
@@ -214,40 +219,71 @@ precision.
 
 ## 📥 Submission Format
 
-Phase 1 requires one valid prediction JSON for each validation split. The
-following ZIP is the recommended layout, not a filename restriction:
+Both phases use the same six-action JSON contract and Score.
+
+### Phase 2: Final Test Submission (Active)
+
+Phase 2 requires a single root-level prediction JSON with `split: "test"` covering all 3,408 test episodes:
 
 ```text
 submission.zip
-├── val_seen.json
-└── val_unseen.json
+└── test.json          # 3,408 test episodes
 ```
 
-Each file follows this schema (the invented ID is only an illustration):
+Package Phase 2 predictions:
+
+```bash
+zip -j submission.zip test.json
+```
+
+Each prediction file follows this schema:
 
 ```json
 {
   "format_version": 1,
-  "split": "val_unseen",
+  "split": "test",
   "episodes": [
     {
-      "episode_id": "synthetic-example-001",
+      "episode_id": "1",
       "actions": ["MOVE_FORWARD", "TURN_LEFT", "LOOK_UP", "LOOK_DOWN", "STOP"]
     }
   ]
 }
 ```
 
+<details>
+<summary><b>Phase 1 (Validation) Submission Format (Click to expand)</b></summary>
+
+Phase 1 requires one valid prediction JSON for each validation split:
+
+```text
+submission.zip
+├── val_seen.json      # 778 episodes
+└── val_unseen.json    # 1,839 episodes
+```
+
+Package Phase 1 predictions:
+
+```bash
+zip -j submission.zip val_seen.json val_unseen.json
+```
+
+Each validation file sets `"split": "val_seen"` or `"split": "val_unseen"`.
+
+*Note: Phase 1 is extended to November 23, 2026 (Monday) solely for development and validation testing, and does not determine challenge awards. All teams are eligible to participate in Phase 2 regardless of Phase 1 participation.*
+
+</details>
+
 Include every official episode ID exactly once. `STOP`, if present, occurs once
-at the end; sequences shorter than 500 actions require it. The examples in
+at the end; sequences shorter than 500 actions require it, while sequences of
+exactly 500 actions may omit it if terminated by the step limit. The examples in
 [`examples/submission`](examples/submission) demonstrate schema only and do not
 have complete manifest coverage.
 
 The validator identifies predictions by each JSON object's `split` value, so
 you may rename the files and include harmless extra root files. It rejects
 missing or duplicate required splits, invalid prediction content, unsafe ZIP
-members, and nested paths. Phase 2 follows the same rule with its single
-required `test` split when that phase opens.
+members, and nested paths.
 
 ## ❓ Frequently Asked Questions
 
@@ -267,7 +303,7 @@ Yes. Both actions are valid and count toward the 500 task steps.
 
 **Q4. Does an action advance a human animation frame?**
 
-No. Human animation follows released wall-clock behavior independently.
+No. Human animations advance with wall-clock time according to the configured motion FPS, rather than advancing one frame per action. Because execution time is affected by runtime performance and hardware, there is no single fixed wall-clock duration for each action (including `LOOK_UP` and `LOOK_DOWN`). All official submissions are replayed in the standardized organizer-controlled CodaBench environment, which determines competition scores.
 
 **Q5. Does local validation compute a Score?**
 
@@ -294,6 +330,30 @@ and place the licensed scenes under your host data root's
 `scene_datasets/mp3d/`. That root can be anywhere on your machine. When using
 the challenge Docker image, mount it at `/data/havln2` inside the container.
 
+**Q8. Can an agent add more cameras to obtain panoramic or 360-degree views?**
+
+No. Adding cameras to the agent is not allowed. You may obtain a panoramic view by rotating the agent using the provided forward-facing RGB-D camera. All rotation actions used to acquire this view must be included in the submitted action sequence and count toward the 500-action budget.
+
+**Q9. Can the agent read its position and heading during navigation?**
+
+Yes. The agent is permitted to read its position and heading from the simulator agent state (GPS + compass) throughout the episode. You are not required to estimate localization solely from actions and visual odometry.
+
+**Q10. Are pretrained models and external training datasets allowed?**
+
+Yes. Publicly available pretrained models are allowed, including navigation policies trained on other VLN datasets, depth encoders and waypoint predictors from open-source VLN-CE projects, general vision and language models, and off-the-shelf perception models such as person detectors. Datasets from other sources are permitted. The intended training restriction is that HA-R2R validation splits (`val_seen`, `val_unseen`) and test splits must not be used for training.
+
+**Q11. Can an agent use `human_motion.json` or simulator ground-truth human states?**
+
+During validation and test inference, no: the agent must not directly read `human_motion.json` to obtain human positions or motion trajectories for planning. This file is provided to support simulator rendering; during inference, the agent should infer human positions and movements from its camera observations. During training, however, ground-truth human information from released training episodes may be used as privileged supervision, provided that it is not accessed during validation or test inference.
+
+**Q12. Are commercial or closed-source model APIs allowed?**
+
+There is no open-weights-only restriction, and commercial or closed-source model APIs are permitted. However, we encourage participants to develop their own methodological contributions and explore smaller, open-weight models (such as a 7B Qwen-VL model) as components of their approach. We discourage relying primarily on powerful closed-source models, although this is a recommendation rather than an eligibility restriction.
+
+**Q13. Does every action sequence need to end with `STOP`?**
+
+Sequences shorter than 500 actions must end with `STOP`. If an episode reaches the maximum budget of 500 actions, `STOP` may be omitted (the episode is terminated automatically by the evaluator's 500-step limit). In all cases, `STOP` may appear at most once and only as the final action.
+
 ## 🔗 Resources and Contact
 
 | Resource | Link |
@@ -305,7 +365,7 @@ the challenge Docker image, mount it at `/data/havln2` inside the container.
 | RoboPAD Workshop | [RoboPAD @ NeurIPS 2026](https://robotpad2026.github.io/) |
 
 For technical support, use [GitHub Issues](https://github.com/roboworld2026/track2/issues).
-For event and registration questions, email [roboworld2026@gmail.com](mailto:roboworld2026@gmail.com).
+For general inquiries, email [roboworld2026@gmail.com](mailto:roboworld2026@gmail.com).
 
 ### 💬 Community & Discussion
 
