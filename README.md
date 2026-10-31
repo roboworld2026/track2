@@ -71,7 +71,7 @@ policy, planner, world model, or VLA method that outputs valid actions is welcom
 | Phase | Duration | Submission | Leaderboard role |
 |:--|:--|:--|:--|
 | Phase 1: Validation | Oct 15 – Nov 23, 2026 | Released `val_seen` and `val_unseen` action sequences | Development & validation testing. Reports both splits; ranks by full-precision `val_unseen` Score. Does not determine awards. |
-| Phase 2: Final Test | Oct 30 – Nov 30, 2026 | Action sequences for held-out test split (3,408 episodes) | Official final test evaluation. Determines final ranking and awards. |
+| Phase 2: Final Evaluation | Oct 30 – Nov 30, 2026 | Action sequences for held-out test split (3,408 episodes) | Official final test evaluation. Determines final ranking and awards. |
 
 *Updated on Oct 30, 2026: Phase 1 is extended to Monday, November 23, 2026 solely for development and validation testing, and does not determine awards. All teams are eligible to participate in Phase 2 regardless of Phase 1 participation. [Download Phase 2 Test Dataset](https://drive.google.com/drive/folders/1HcSg3qCxriEjsgDLlPWBEz9TbgD5RA7W?usp=drive_link).*
 
@@ -221,7 +221,7 @@ precision.
 
 Both phases use the same six-action JSON contract and Score.
 
-### Phase 2: Final Test Submission (Active)
+### Phase 2: Final Evaluation Submission (Active)
 
 Phase 2 requires a single root-level prediction JSON with `split: "test"` covering all 3,408 test episodes:
 
